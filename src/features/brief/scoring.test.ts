@@ -3,8 +3,8 @@ import type { BriefInput } from "./brief.schema";
 import { calculateReadinessScore, getReadinessLevel } from "./scoring";
 
 const strongBrief: BriefInput = {
-  name: "Alex Morgan",
-  email: "alex@example.com",
+  name: "John Doe",
+  email: "jd@example.com",
   company: "Northstar Analytics",
   projectType: "landing_page",
   primaryGoal: "leads",
