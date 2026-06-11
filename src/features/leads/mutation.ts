@@ -1,30 +1,43 @@
-import type { NewLead } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { leadNotes, leads } from "@/db/schema";
 import type { BriefInput } from "@/features/brief/brief.schema";
-import { calculateReadinessScore } from "@/features/brief/scoring";
+import { mapBriefToNewLead } from "./mappers";
+import type { LeadStatus } from "./types";
 
-export function mapBriefToNewLead(input: BriefInput): NewLead {
-  const score = calculateReadinessScore(input);
+export async function createLeadFromBrief(input: BriefInput) {
+  const newLead = mapBriefToNewLead(input);
+  const [createdLead] = await db.insert(leads).values(newLead).returning();
 
-  return {
-    name: input.name,
-    email: input.email,
-    company: input.company,
-    projectType: input.projectType,
-    primaryGoal: input.primaryGoal,
-    offerDescription: input.offerDescription,
-    targetAudience: input.targetAudience,
-    audienceProblem: input.audienceProblem,
-    desiredAction: input.desiredAction,
-    hasCopy: input.hasCopy,
-    hasBrandAssets: input.hasBrandAssets,
-    hasAnalytics: input.hasAnalytics,
-    deadline: input.deadline,
-    budgetRange: input.budgetRange,
-    successMetric: input.successMetric,
-    message: input.message,
-    readinessScore: score.total,
-    readinessLevel: score.level,
-    scoreBreakdown: score.breakdown,
-    detectedGaps: score.detectedGaps,
-  };
+  return createdLead;
+}
+
+export async function updateLeadStatus(leadId: string, status: LeadStatus) {
+  const [updatedLead] = await db
+    .update(leads)
+    .set({
+      status,
+      updatedAt: new Date(),
+    })
+    .where(eq(leads.id, leadId))
+    .returning();
+
+  return updatedLead;
+}
+
+export async function addLeadNote(leadId: string, body: string) {
+  const [createdNote] = await db
+    .insert(leadNotes)
+    .values({
+      leadId,
+      body,
+    })
+    .returning();
+
+  await db
+    .update(leads)
+    .set({ updatedAt: new Date() })
+    .where(eq(leads.id, leadId));
+
+  return createdNote;
 }
