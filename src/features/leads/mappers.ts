@@ -1,6 +1,6 @@
 import type { NewLead } from "@/db/schema";
 import type { BriefInput } from "@/features/brief/brief.schema";
-import { calculateReadinessScore } from "@/features/brief/scoring";
+import { calculateReadinessScore } from "../brief/scoring";
 
 export function mapBriefToNewLead(input: BriefInput): NewLead {
   const score = calculateReadinessScore(input);
