@@ -65,3 +65,8 @@ export const briefSchema = z.object({
 });
 
 export type BriefInput = z.infer<typeof briefSchema>;
+
+export type ProjectType = (typeof projectTypes)[number];
+export type PrimaryGoal = (typeof primaryGoals)[number];
+export type BudgetRange = (typeof budgetRanges)[number];
+export type DeadlineRange = (typeof deadlineRanges)[number];
